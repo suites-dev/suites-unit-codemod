@@ -10,6 +10,8 @@ export interface CliOptions {
   print: boolean;
   verbose: boolean;
   allowCriticalErrors: boolean;
+  doubles?: 'jest' | 'vitest';
+  di?: 'nestjs' | 'inversify';
 }
 
 /**

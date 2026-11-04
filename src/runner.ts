@@ -1,4 +1,6 @@
 import * as path from 'path';
+import { existsSync } from 'fs';
+import { globSync } from 'glob';
 import { run } from 'jscodeshift/src/Runner';
 import type { CliOptions, MigrationSummary } from './types';
 import type { Logger } from './utils/logger';
@@ -18,6 +20,12 @@ export async function runTransform(
   // In development, __dirname points to dist/ after compilation
   const transformPath = path.resolve(__dirname, transformInfo.path + '.js');
 
+  const isV4 = transformInfo.name === 'suites/3/to-suites-v4';
+  const targetPaths = isV4 && !existsSync(targetPath)
+    ? globSync(targetPath, { nodir: true, ignore: ['**/node_modules/**', '**/dist/**'] })
+    : [targetPath];
+  if (isV4 && !targetPaths.length) throw new Error(`No files matched: ${targetPath}`);
+
   // Prepare jscodeshift options
   // Pass our custom options through jscodeshift's options object
   // When print is enabled, also enable dry mode to prevent file writes
@@ -25,19 +33,21 @@ export async function runTransform(
     dry: options.dry || options.print,
     verbose: options.verbose ? 2 : 0,
     extensions: 'ts,tsx',
-    ignorePattern: ['**/node_modules/**', '**/dist/**', '**/*.d.ts'],
+    ignorePattern: ['**/node_modules/**', '**/dist/**', ...(isV4 ? [] : ['**/*.d.ts'])],
     parser: options.parser || 'ts',
     runInBand: false, // Use parallel processing
     babel: false, // Don't use babel parser
     // Pass our custom options
     allowCriticalErrors: options.allowCriticalErrors,
     print: options.print,
+    doubles: options.doubles,
+    di: options.di,
   };
 
   // Step 1: Discover and transform files using jscodeshift
   const jscodeshiftResults = await run(
     transformPath,
-    [targetPath],
+    targetPaths,
     jscodeshiftOptions
   );
 

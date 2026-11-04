@@ -1,4 +1,4 @@
-import { Command } from 'commander';
+import { Command, Option } from 'commander';
 import { createLogger } from './utils/logger';
 import type { CliOptions } from './types';
 import { runTransform } from './runner';
@@ -25,6 +25,8 @@ program
   .option('-p, --print', 'Print transformed files to stdout, useful for development', false)
   .option('--verbose', 'Show more information about the transform process', false)
   .option('--parser <parser>', 'Parser to use (tsx, ts, babel)', 'tsx')
+  .addOption(new Option('--doubles <adapter>', 'Suites v4 doubles adapter').choices(['jest', 'vitest']))
+  .addOption(new Option('--di <adapter>', 'Suites v4 dependency injection adapter').choices(['nestjs', 'inversify']))
   .option('--allow-critical-errors', 'Allow writes even when critical validation errors are present', false)
   .action(
     async (
@@ -81,7 +83,8 @@ program
         logger.newline();
 
         // Run the transformation
-        await runTransform(sourcePath, transformInfo, options, logger);
+        const summary = await runTransform(sourcePath, transformInfo, options, logger);
+        if (summary.errors > 0) process.exitCode = 1;
       } catch (error) {
         logger.newline();
         logger.error('Transformation failed:');

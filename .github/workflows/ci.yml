@@ -55,6 +55,9 @@ jobs:
       - name: Run tests with coverage
         run: pnpm test
 
+      - name: Run CLI end-to-end tests
+        run: pnpm exec jest --testPathPattern=e2e --runInBand
+
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
         with:

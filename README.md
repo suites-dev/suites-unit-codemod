@@ -23,6 +23,7 @@ Run with `--dry` or `-d` to preview changes without modifying files.
 
 ## Available Codemods
 
+- **`suites/3/to-suites-v4`** - Add explicit Suites v4 type references and clean up legacy helper imports
 - **`automock/2/to-suites-v3`** - Migrate test files from Automock v2 to Suites v3 testing framework
 
 ## Example
@@ -81,6 +82,8 @@ describe('UserService', () => {
 | `-f, --force`       | Bypass Git safety checks and forcibly run codemods        | `false` |
 | `-p, --print`       | Print transformed files to stdout, useful for development | `false` |
 | `--verbose`         | Show more information about the transform process         | `false` |
+| `--doubles <adapter>` | Suites v4 doubles adapter: `jest` or `vitest` | inferred |
+| `--di <adapter>` | Suites v4 DI adapter: `nestjs` or `inversify` | inferred |
 | `--parser <parser>` | Parser to use: `tsx`, `ts`, `babel`                       | `tsx`   |
 | `-h, --help`        | Display help message                                      | -       |
 
@@ -101,6 +104,45 @@ npx @suites/codemod automock/2/to-suites-v3 src --parser babel
 ```
 
 ## Transform Details
+
+### `suites/3/to-suites-v4`
+
+Suites 4 stops patching declaration files during installation. This transform makes adapter augmentation explicit in your selected TypeScript source and declaration files:
+
+```bash
+# Run separately for each test TypeScript project.
+npx @suites/codemod suites/3/to-suites-v4 ./src --dry --print
+
+# Select adapters explicitly when they cannot be inferred.
+npx @suites/codemod suites/3/to-suites-v4 'tests/**/*.ts' --doubles jest --di nestjs --dry
+
+# Apply after reviewing the preview.
+npx @suites/codemod suites/3/to-suites-v4 ./src
+```
+
+**Release availability:** This transform requires a codemod release containing it. It is not included in `@suites/codemod@0.1.0`. To try this checkout before release, run `pnpm install --frozen-lockfile`, `pnpm build`, then replace `npx @suites/codemod` with `node /path/to/codemod/bin/suites-codemod.js`.
+
+**Automatic changes:**
+
+- Adds a `/// <reference types="@suites/doubles.jest/unit" />` or Vitest equivalent to files using Suites types/API. Files using TestBed also receive their DI adapter's `/metadata` reference. Standalone `mock`, `stub`, `Mocked`, and `Stub` consumers do not need a DI adapter.
+- Includes `.d.ts` files, preserving existing references and adding missing DI metadata when a DI adapter is installed. Unrelated declarations are unchanged.
+- Moves named `mock` and `stub` imports from `@suites/unit` to the selected doubles adapter, preserving aliases and type-only imports. This repairs older examples and Automock codemod output; these helpers were not public exports of `@suites/unit` in v3.1.1 either.
+- Rewrites obsolete adapter `/types` references to `/unit` or `/metadata`. `/types` was not a canonical v3 export. Side-effect imports of declaration-only entry points become triple-slash references, never runtime imports of those paths.
+- Preserves `TestBed.solitary()`, `TestBed.sociable()`, `.compile()`, mock configuration, and dependency retrieval calls.
+
+The transform selects one doubles adapter (`--doubles jest|vitest`) and, where needed, one DI adapter (`--di nestjs|inversify`). It reads only the nearest `package.json`, considering dependencies, devDependencies, and peerDependencies. Existing references and adapter imports also identify an adapter when the manifest does not. Multiple installed adapters require explicit selection even when a file has a reference. Conflicting references/imports must be fixed manually. Run separately for test projects with different adapters.
+
+References are added per file so this transform does not guess your tsconfig inheritance or include patterns. You may consolidate them into a shared `suites.d.ts` afterward, provided your test tsconfig includes it. Already migrated files are unchanged on repeated runs. Both `--dry` and `--print` prevent writes.
+
+**Manual work and limitations:**
+
+- Upgrade Suites packages together to v4 and check runtime/framework peer requirements using the [v4 migration guide](https://suites.dev/docs/migration-guides/from-v3/). Package manifests, lockfiles, tsconfigs, test-runner settings, and installed packages are not changed.
+- Migrate Sinon calls/assertions manually and remove its unsupported adapter. The codemod reports Sinon rather than selecting a replacement. An explicit doubles choice does not convert Sinon APIs.
+- Review NestJS metadata arguments and Inversify decorators/injection changes manually. The transform does not remove arguments or infer DI tokens.
+- Namespace/default imports, CommonJS/dynamic/import-equals imports, inline import types, star re-exports, and helper re-exports from `@suites/unit` receive actionable errors. Convert these to named imports/exports before retrying.
+- Only `.ts` and `.tsx` source files are processed, including `.d.ts` for this transform. Use a directory or a quoted glob. Include your declaration setup files in the selected target, and update any obsolete references in `tsconfig.compilerOptions.types` manually.
+
+An error leaves the affected file unchanged and makes the CLI exit nonzero. Other files may have completed, so use a clean Git tree and preview first. `--allow-critical-errors` does not bypass v4 safety errors. After applying, review the diff, run your TypeScript check, and run your test suite.
 
 ### `automock/2/to-suites-v3`
 
