@@ -17,7 +17,7 @@ program
   .helpOption('-h, --help', 'Display help message')
   .argument(
     '[codemod]',
-    'Codemod slug to run. See "https://github.com/suites-dev/codemod".'
+    'Codemod slug to run. See "https://github.com/suites-dev/suites-unit-codemod".'
   )
   .argument('[source]', 'Path to source files or directory to transform including glob patterns.', '.')
   .option('-d, --dry', 'Dry run (no changes are made to files)', false)

@@ -7,10 +7,10 @@
   "homepage": "https://suites.dev",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/suites-dev/codemod.git"
+    "url": "git+https://github.com/suites-dev/suites-unit-codemod.git"
   },
   "bugs": {
-    "url": "https://github.com/suites-dev/codemod/issues"
+    "url": "https://github.com/suites-dev/suites-unit-codemod/issues"
   },
   "bin": {
     "suites-codemod": "bin/suites-codemod.js"
