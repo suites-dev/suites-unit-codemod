@@ -23,7 +23,7 @@ on:
           - next
 
 permissions:
-  contents: write
+  contents: read
   id-token: write
 
 jobs:
@@ -37,12 +37,15 @@ jobs:
         with:
           ref: ${{ inputs.branch }}
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: '20.x'
-          registry-url: 'https://registry.npmjs.org'
+          node-version: '24.x'
+
+      - name: Install npm for trusted publishing
+        run: npm install --global npm@11.21.1
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
@@ -76,10 +79,8 @@ jobs:
 
       - name: Publish to NPM
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_CONFIG_PROVENANCE: true
         run: |
-          echo "//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}" > .npmrc
           npm publish --tag ${{ inputs.tag }} --provenance --access public
 
       - name: Create Summary
@@ -106,6 +107,6 @@ jobs:
           echo "The package could not be published. Check the logs above for details." >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### Common Issues" >> $GITHUB_STEP_SUMMARY
-          echo "- Ensure NPM_TOKEN secret is configured correctly" >> $GITHUB_STEP_SUMMARY
+          echo "- Check the npm Trusted Publisher entry for publish.yml" >> $GITHUB_STEP_SUMMARY
           echo "- Check if the version already exists on npm" >> $GITHUB_STEP_SUMMARY
           echo "- Verify build and tests pass successfully" >> $GITHUB_STEP_SUMMARY

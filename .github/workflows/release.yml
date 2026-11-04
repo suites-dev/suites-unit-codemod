@@ -3,9 +3,7 @@ name: Release
 on: [workflow_dispatch]
 
 permissions:
-  contents: write
-  issues: write
-  pull-requests: write
+  contents: read
   id-token: write
 
 jobs:
@@ -17,13 +15,15 @@ jobs:
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
-          persist-credentials: true
+          persist-credentials: false
 
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: '20.x'
-          registry-url: 'https://registry.npmjs.org'
+          node-version: '24.x'
+
+      - name: Install npm for trusted publishing
+        run: npm install --global npm@11.21.1
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
@@ -36,10 +36,32 @@ jobs:
       - name: Verify types
         run: pnpm run build
 
+      - name: Verify release authentication configuration
+        run: pnpm test:release-auth
+
+      - name: Mint release bot token
+        id: release-app
+        uses: actions/create-github-app-token@v3
+        with:
+          client-id: ${{ vars.SUITES_RELEASE_APP_CLIENT_ID }}
+          private-key: ${{ secrets.SUITES_RELEASE_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: ${{ github.event.repository.name }}
+          permission-contents: write
+          permission-pull-requests: write
+
       - name: Release
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          GITHUB_TOKEN: ${{ steps.release-app.outputs.token }}
+          GH_TOKEN: ${{ steps.release-app.outputs.token }}
+          BOT_SLUG: ${{ steps.release-app.outputs.app-slug }}
           NPM_CONFIG_PROVENANCE: true
-        run: npx semantic-release
+        run: |
+          bot_id=$(gh api "users/${BOT_SLUG}[bot]" --jq .id)
+          export GIT_AUTHOR_NAME="${BOT_SLUG}[bot]"
+          export GIT_AUTHOR_EMAIL="${bot_id}+${BOT_SLUG}[bot]@users.noreply.github.com"
+          export GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME"
+          export GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
+          git config --local credential.helper ''
+          git config --local --add credential.helper '!gh auth git-credential'
+          pnpm exec semantic-release
