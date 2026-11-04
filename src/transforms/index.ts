@@ -25,12 +25,11 @@ export const AVAILABLE_TRANSFORMS: TransformInfo[] = [
     description: 'Migrate from Automock v2 to Suites v3 unit testing framework',
     path: './transforms/automock/2/to-suites-v3',
   },
-  // Future transforms:
-  // {
-  //   name: 'automock/3/to-suites-v4',
-  //   description: 'Migrate from Suites v3 to Suites v4',
-  //   path: './transforms/automock/3/to-suites-v4',
-  // },
+  {
+    name: 'suites/3/to-suites-v4',
+    description: 'Migrate Suites v3 source and type references to Suites v4',
+    path: './transforms/suites/3/to-suites-v4',
+  },
 ];
 
 /**
