@@ -202,7 +202,7 @@ Built-in validation ensures:
 - Review validation errors in the output
 - Fix the issues reported by validators
 
-For more help, see [troubleshooting guide](https://github.com/suites-dev/codemod/issues) or open an issue.
+For more help, see [troubleshooting guide](https://github.com/suites-dev/suites-unit-codemod/issues) or open an issue.
 
 ## How It Works
 
@@ -332,8 +332,8 @@ MIT (c) [Omer Morad](https://github.com/omermorad)
 ## Links
 
 - [Suites Documentation](https://suites.dev)
-- [GitHub Repository](https://github.com/suites-dev/codemod)
-- [Issue Tracker](https://github.com/suites-dev/codemod/issues)
+- [GitHub Repository](https://github.com/suites-dev/suites-unit-codemod)
+- [Issue Tracker](https://github.com/suites-dev/suites-unit-codemod/issues)
 - [NPM Package](https://www.npmjs.com/package/@suites/codemod)
 
 ## Related Projects
@@ -344,4 +344,4 @@ MIT (c) [Omer Morad](https://github.com/omermorad)
 
 ---
 
-**Need help?** Open an issue on [GitHub](https://github.com/suites-dev/codemod/issues) or check the [Suites documentation](https://suites.dev).
+**Need help?** Open an issue on [GitHub](https://github.com/suites-dev/suites-unit-codemod/issues) or check the [Suites documentation](https://suites.dev).
