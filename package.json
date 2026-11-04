@@ -27,6 +27,7 @@
     "build": "tsc -p tsconfig.build.json",
     "test": "jest --coverage --verbose --testPathIgnorePatterns=e2e",
     "test:fixtures": "jest --testPathPattern=integration",
+    "test:release-auth": "node --test test/release/auth.mjs",
     "test:e2e": "npm run build && jest --testPathPattern=e2e",
     "test:watch": "jest --watch --testPathIgnorePatterns=e2e",
     "lint": "eslint '{src,test}/**/*.ts'",
@@ -62,7 +63,7 @@
     "jest-junit": "^16.0.0",
     "prettier": "^3.7.4",
     "rimraf": "^5.0.0",
-    "semantic-release": "^24.2.0",
+    "semantic-release": "^25.0.1",
     "ts-jest": "^29.2.5",
     "ts-node": "^10.9.2"
   },

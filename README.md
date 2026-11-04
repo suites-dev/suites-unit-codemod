@@ -176,6 +176,10 @@ Built-in validation ensures:
 - Mock strategies are correctly applied
 - Retrieved mocks use `.impl()` strategy
 
+## Releasing
+
+See [RELEASING.md](RELEASING.md) for `suites-release-bot`, npm Trusted Publishing setup, and the manual release workflows.
+
 ## Requirements
 
 - **Node.js**: `^16.10.0 || ^18.12.0 || >=20.0.0`

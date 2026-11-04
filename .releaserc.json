@@ -69,7 +69,15 @@
         "message": "chore(release): ${nextRelease.version}\n\n${nextRelease.notes}"
       }
     ],
-    "@semantic-release/github",
+    [
+      "@semantic-release/github",
+      {
+        "successCommentCondition": false,
+        "failCommentCondition": false,
+        "releasedLabels": false,
+        "addReleases": false
+      }
+    ],
     [
       "@semantic-release/exec",
       {
