@@ -1,6 +1,6 @@
 {
   "name": "@suites/codemod",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Code transformation tool for the Suites testing framework",
   "author": "Omer Morad",
   "license": "MIT",

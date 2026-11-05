@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.0](https://github.com/suites-dev/suites-unit-codemod/compare/@suites/codemod@0.1.0...@suites/codemod@0.2.0) (2026-11-05)
+
+### Features
+
+* add Suites v4 migration codemod ([#5](https://github.com/suites-dev/suites-unit-codemod/issues/5)) ([70c7cb2](https://github.com/suites-dev/suites-unit-codemod/commit/70c7cb286c2ffea56d1be3ef0577a898a5bc1ea6))
+
+### Bug Fixes
+
+* align release metadata with renamed repository ([#6](https://github.com/suites-dev/suites-unit-codemod/issues/6)) ([438a041](https://github.com/suites-dev/suites-unit-codemod/commit/438a0410ef2257890983316d02c9905f6890e2cb))
+* use release bot and npm trusted publishing ([#7](https://github.com/suites-dev/suites-unit-codemod/issues/7)) ([b8542cf](https://github.com/suites-dev/suites-unit-codemod/commit/b8542cf86877c2297cc18278ae07fab7ee207ae3))
+
 ## [0.1.0](https://github.com/suites-dev/codemod/compare/@suites/codemod@0.0.0...@suites/codemod@0.1.0) (2026-05-05)
 
 ### ⚠ BREAKING CHANGES
